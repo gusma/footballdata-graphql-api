@@ -1,6 +1,9 @@
 import mongoose, { Schema } from 'mongoose'
 
 const teamSchema = new Schema({
+  teamId: {
+    type: String
+  },
   teamTla: {
     type: String
   },
@@ -15,6 +18,12 @@ const teamSchema = new Schema({
   },
   teamLeague: {
     type: String
+  },
+  teamSquad: {
+    type: Array
+  },
+  coach: {
+    type: Array
   }
 })
 

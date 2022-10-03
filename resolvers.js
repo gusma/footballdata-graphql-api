@@ -1,8 +1,9 @@
 import LeagueModel from './src/models/League.js'
 import TeamModel from './src/models/Team.js'
-import Player from './src/models/Player.js'
+import PlayerModel from './src/models/Player.js'
 import fetchLeague from './src/controllers/fetchLeague.js'
 import fetchTeams from './src/controllers/fetchTeams.js'
+import fetchPlayers from './src/controllers/fetchPlayers.js'
 import { UserInputError } from 'apollo-server-errors'
 
 const resolvers = {
@@ -16,7 +17,7 @@ const resolvers = {
       return teams
     },
     getAllPlayers: async () => {
-      const players = await Player.find()
+      const players = await PlayerModel.find()
       return players
     },
     getLeague: async (_, args) => {
@@ -28,7 +29,7 @@ const resolvers = {
       return team
     },
     getPlayer: async (_, args) => {
-      const player = await Player.findById(args.id)
+      const player = await PlayerModel.findById(args.id)
       return player
     }
   },
@@ -45,14 +46,23 @@ const resolvers = {
       return newLeague
     },
     createTeam: async (_, args) => {
-      const { teamTla, teamShortName, teamAreaName, teamAddress, teamLeague } =
-        args.team
+      const {
+        teamTla,
+        teamShortName,
+        teamAreaName,
+        teamAddress,
+        teamLeague,
+        teamSquad,
+        coach
+      } = args.team
       const newTeam = new TeamModel({
         teamTla,
         teamShortName,
         teamAreaName,
         teamAddress,
-        teamLeague
+        teamLeague,
+        teamSquad,
+        coach
       })
       await newTeam.save()
       return newTeam
@@ -65,7 +75,7 @@ const resolvers = {
         playerNationality,
         playerTeam
       } = args.player
-      const newPlayer = new Player({
+      const newPlayer = new PlayerModel({
         playerName,
         playerPosition,
         playerDateOfBirth,
@@ -84,7 +94,7 @@ const resolvers = {
       return 'Team deleted'
     },
     async deletePlayer (_, { id }) {
-      await Player.findByIdAndDelete(id)
+      await PlayerModel.findByIdAndDelete(id)
       return 'Player deleted'
     },
     async updateLeague (_, { league, id }) {
@@ -102,11 +112,18 @@ const resolvers = {
       const { leagueCode } = args.league
       const leagueAvailable = await LeagueModel.find({ leagueCode })
       if (leagueAvailable.length === 0) {
-        await fetchLeague(leagueCode).then(fetchTeams(leagueCode))
+        fetchLeague(leagueCode)
+        console.log('Fetch League')
+        await fetchTeams(leagueCode)
+        console.log('Fetch Teams')
+        await fetchPlayers(leagueCode)
+        console.log('Fetch Players & Coaches')
         const newLeague = new LeagueModel({ leagueCode })
         return newLeague
       }
-      throw new UserInputError('Sorry, that league already exists in our records.')
+      throw new UserInputError(
+        'Sorry, that league already exists in our records.'
+      )
     },
     async updateTeam (_, { team, id }) {
       const updatedTeam = await TeamModel.findByIdAndUpdate(
@@ -119,7 +136,7 @@ const resolvers = {
       return updatedTeam
     },
     async updatePlayer (_, { player, id }) {
-      const updatedPlayer = await Player.findByIdAndUpdate(
+      const updatedPlayer = await PlayerModel.findByIdAndUpdate(
         id,
         {
           $set: player

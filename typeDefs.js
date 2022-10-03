@@ -9,7 +9,7 @@ const typeDefs = gql`
   }
 
   type Team {
-    teamId: ID
+    teamId: String
     teamTla: String
     teamShortName: String
     teamAreaName: String
@@ -42,6 +42,7 @@ const typeDefs = gql`
   }
 
   input TeamInput {
+    teamId: String
     teamTla: String
     teamShortName: String
     teamAreaName: String
