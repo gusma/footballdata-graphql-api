@@ -1,7 +1,7 @@
 import LeagueModel from './src/models/League.js'
 import TeamModel from './src/models/Team.js'
 import Player from './src/models/Player.js'
-// import fetchLeague from './src/controllers/fetchLeague.js'
+import fetchLeague from './src/controllers/fetchLeague.js'
 
 const resolvers = {
   Query: {
@@ -98,8 +98,7 @@ const resolvers = {
 
     async importLeague (_, args) {
       const { leagueCode } = args
-      const newLeague = new LeagueModel({ leagueCode })
-      await newLeague.save()
+      await fetchLeague(leagueCode)
       return {}
     },
     async updateTeam (_, { team, id }) {

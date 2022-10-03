@@ -1,13 +1,13 @@
 import fetch from 'node-fetch'
-import LeagueModel from '../models/League'
+import LeagueModel from '../models/League.js'
 
-export default async function fetchLeague (areaCode) {
+async function fetchLeague (areaCode) {
   const competition = await fetch(
     `https://api.football-data.org/v4/competitions/${areaCode}`,
     {
       headers: {
         method: 'GET',
-        'X-AUTH-TOKEN': '962696d62ee94bb1b6f922e50fceac04'
+        'X-AUTH-TOKEN': process.env.X_AUTH_TOKEN
       }
     }
   )
@@ -25,3 +25,5 @@ export default async function fetchLeague (areaCode) {
     importedLeague.save()
   }
 }
+
+export default fetchLeague

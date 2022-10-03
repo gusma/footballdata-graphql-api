@@ -1,9 +1,10 @@
 import express from 'express'
 import { ApolloServer } from 'apollo-server-express'
-
 import typeDefs from './typeDefs.js'
 import resolvers from './resolvers.js'
 import connectDB from './db.js'
+import * as dotenv from 'dotenv'
+dotenv.config()
 
 const app = express()
 connectDB()

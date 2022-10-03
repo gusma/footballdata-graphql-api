@@ -25,7 +25,7 @@
   "homepage": "https://github.com/gusma/footballdata-graphql-api#readme",
   "dependencies": {
     "apollo-server-express": "^3.10.2",
-    "dotenv": "^16.0.2",
+    "dotenv": "^16.0.3",
     "express": "^4.18.1",
     "graphql": "^16.6.0",
     "mongoose": "^6.6.2",

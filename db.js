@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 export default async function connectDB () {
   try {
-    await mongoose.connect('mongodb://localhost/footballdata-graphql-api')
+    await mongoose.connect(process.env.DB_PATH)
     console.log('MongoDB connected')
   } catch (err) {
     console.log(
