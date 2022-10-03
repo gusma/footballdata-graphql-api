@@ -1,51 +1,74 @@
-const { gql } = require('apollo-server-express')
+import { gql } from 'apollo-server-express'
 
 const typeDefs = gql`
-
-type League {
+  type League {
+    id: ID
     leagueName: String
     leagueCode: String
     leagueAreaName: String
-}
+  }
 
-type Team {
+  type Team {
+    teamId: ID
     teamTla: String
     teamShortName: String
     teamAreaName: String
     teamAddress: String
     teamLeague: String
-}
+  }
 
-type Player {
-    playerName: String,
-    playerPosition: String,
-    playerDateOfBirth: String,
-    playerNationality: String,
-    playerTeam: String,
-}
+  type Player {
+    playerId: ID
+    playerName: String
+    playerPosition: String
+    playerDateOfBirth: String
+    playerNationality: String
+    playerTeam: String
+  }
 
-type Query {
-    hello: String
+  type Query {
     getAllLeagues: [League]
     getAllTeams: [Team]
     getAllPlayers: [Player]
-}
+    getLeague(id: ID): League
+    getTeam(id: ID): Team
+    getPlayer(id: ID): Player
+  }
 
-type Mutation {
-    createLeague(leagueName: String, leagueCode: String, leagueAreaName: String): League
-    importLeague(leagueName: String, leagueCode: String, leagueAreaName: String): League
-    createTeam(
+  input LeagueInput {
+    leagueName: String
+    leagueCode: String
+    leagueAreaName: String
+  }
+
+  input TeamInput {
     teamTla: String
     teamShortName: String
     teamAreaName: String
     teamAddress: String
-    teamLeague: String): Team
-    createPlayer(playerName: String,
-    playerPosition: String,
-    playerDateOfBirth: String,
-    playerNationality: String,
-    playerTeam: String): Player
-}
+    teamLeague: String
+  }
+
+  input PlayerInput {
+    playerName: String
+    playerPosition: String
+    playerDateOfBirth: String
+    playerNationality: String
+    playerTeam: String
+  }
+
+  type Mutation {
+    createLeague(league: LeagueInput): League
+    importLeague(league: LeagueInput): League
+    createTeam(team: TeamInput): Team
+    createPlayer(player: PlayerInput): Player
+    updateLeague(id: ID!, league: LeagueInput): League
+    updateTeam(id: ID!, team: TeamInput): Team
+    updatePlayer(id: ID!, player: PlayerInput): Player
+    deleteLeague(id: ID!): String
+    deleteTeam(id: ID!): String
+    deletePlayer(id: ID!): String
+  }
 `
 
-module.exports = {typeDefs}
+export default typeDefs

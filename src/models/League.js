@@ -1,15 +1,17 @@
-const { Schema, model } = require('mongoose')
+import mongoose, { Schema } from 'mongoose'
 
 const leagueSchema = new Schema({
   leagueName: {
-    type: String,
+    type: String
   },
   leagueCode: {
-    type: String,
+    type: String
   },
   leagueAreaName: {
-    type: String,
-  },
+    type: String
+  }
 })
 
-module.exports = model('League', leagueSchema)
+const LeagueModel = mongoose.model('League', leagueSchema)
+
+export default LeagueModel

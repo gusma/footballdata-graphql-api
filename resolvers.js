@@ -1,54 +1,128 @@
-const League = require('./src/models/League')
-const Team = require('./src/models/Team')
+import LeagueModel from './src/models/League.js'
+import TeamModel from './src/models/Team.js'
+import Player from './src/models/Player.js'
+// import fetchLeague from './src/controllers/fetchLeague.js'
 
 const resolvers = {
+  Query: {
+    getAllLeagues: async () => {
+      const leagues = await LeagueModel.find()
+      return leagues
+    },
+    getAllTeams: async () => {
+      const teams = await TeamModel.find()
+      return teams
+    },
+    getAllPlayers: async () => {
+      const players = await Player.find()
+      return players
+    },
+    getLeague: async (_, args) => {
+      const league = await LeagueModel.findById(args.id)
+      return league
+    },
+    getTeam: async (_, args) => {
+      const team = await TeamModel.findById(args.id)
+      return team
+    },
+    getPlayer: async (_, args) => {
+      const player = await Player.findById(args.id)
+      return player
+    }
+  },
 
-    Query: {
-        hello: () => "Hello world",
-        getAllLeagues: async () => { 
-            const leagues = await League.find()
-            return leagues
+  Mutation: {
+    async createLeague (_, args) {
+      const { leagueCode, leagueName, leagueAreaName } = args.league
+      const newLeague = new LeagueModel({
+        leagueCode,
+        leagueName,
+        leagueAreaName
+      })
+      await newLeague.save()
+      return newLeague
+    },
+    createTeam: async (_, args) => {
+      const { teamTla, teamShortName, teamAreaName, teamAddress, teamLeague } =
+        args.team
+      const newTeam = new TeamModel({
+        teamTla,
+        teamShortName,
+        teamAreaName,
+        teamAddress,
+        teamLeague
+      })
+      await newTeam.save()
+      return newTeam
+    },
+    createPlayer: async (_, args) => {
+      const {
+        playerName,
+        playerPosition,
+        playerDateOfBirth,
+        playerNationality,
+        playerTeam
+      } = args.player
+      const newPlayer = new Player({
+        playerName,
+        playerPosition,
+        playerDateOfBirth,
+        playerNationality,
+        playerTeam
+      })
+      await newPlayer.save()
+      return newPlayer
+    },
+    async deleteLeague (_, { id }) {
+      await LeagueModel.findByIdAndDelete(id)
+      return 'League deleted'
+    },
+    async deleteTeam (_, { id }) {
+      await TeamModel.findByIdAndDelete(id)
+      return 'Team deleted'
+    },
+    async deletePlayer (_, { id }) {
+      await Player.findByIdAndDelete(id)
+      return 'Player deleted'
+    },
+    async updateLeague (_, { league, id }) {
+      const updatedLeague = await LeagueModel.findByIdAndUpdate(
+        id,
+        {
+          $set: league
         },
-        getAllTeams: async () => { 
-            const teams = await Team.find()
-            return teams
-        },
-        getAllPlayers: async () => { 
-            const players = await Player.find()
-            return players
-        }
-
+        { new: true }
+      )
+      return updatedLeague
     },
 
-    Mutation: {
-        createLeague: async (_, args) => { 
-            const { leagueCode, leagueName, leagueAreaName } = args
-            const newLeague = new League({ leagueCode, leagueName, leagueAreaName })
-            await newLeague.save()
-            return newLeague
+    async importLeague (_, args) {
+      const { leagueCode } = args
+      const newLeague = new LeagueModel({ leagueCode })
+      await newLeague.save()
+      return {}
+    },
+    async updateTeam (_, { team, id }) {
+      const updatedTeam = await TeamModel.findByIdAndUpdate(
+        id,
+        {
+          $set: team
         },
-        createTeam: async (_, args) => { 
-            const { teamTla, teamShortName, teamAreaName, teamAddress, teamLeague } = args
-            const newTeam = new League({ teamTla, teamShortName, teamAreaName, teamAddress, teamLeague })
-            await newTeam.save()
-            return newTeam
+        { new: true }
+      )
+      return updatedTeam
+    },
+    async updatePlayer (_, { player, id }) {
+      const updatedPlayer = await Player.findByIdAndUpdate(
+        id,
+        {
+          $set: player
         },
-        createPlayer: async (_, args) => { 
-            const { playerName, playerPosition, playerDateOfBirth, playerNationality } = args
-            const newPlayer = new Player({ playerName, playerPosition, playerDateOfBirth, playerNationality, playerTeam })
-            await newPlayer.save()
-            return newPlayer
-        },
-        importLeague: async (_, args) => {
-            const { leagueCode } = args
-            const newLeague = new League({ leagueCode })
-            await newLeague.save()
-            return {}
-
-        }
-        
+        { new: true }
+      )
+      return updatedPlayer
     }
-
+  }
 }
 
-module.exports = {resolvers}
+export default resolvers

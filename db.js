@@ -1,15 +1,13 @@
-const { connect } = require('mongoose')
+import mongoose from 'mongoose'
 
-const connectDB = async () => { 
-
-    try {
-        await connect('mongodb://localhost/footballdata-graphql-api')
-        console.log("MongoDB connected")
-    }
-    catch (err) {
-        console.log('There\'s trouble connecting to your DB. Please check your configuration', err)
-     }
-
+export default async function connectDB () {
+  try {
+    await mongoose.connect('mongodb://localhost/footballdata-graphql-api')
+    console.log('MongoDB connected')
+  } catch (err) {
+    console.log(
+      "There's trouble connecting to your DB. Please check your configuration",
+      err
+    )
+  }
 }
-
-module.exports = { connectDB }

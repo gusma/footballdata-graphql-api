@@ -1,21 +1,23 @@
-const { Schema, model } = require('mongoose')
+import mongoose, { Schema } from 'mongoose'
 
 const teamSchema = new Schema({
   teamTla: {
-    type: String,
+    type: String
   },
   teamShortName: {
-    type: String,
+    type: String
   },
   teamAreaName: {
-    type: String,
+    type: String
   },
   teamAddress: {
-    type: String,
+    type: String
   },
   teamLeague: {
-    type: String,
-  },
+    type: String
+  }
 })
 
-module.exports = model('Team', teamSchema)
+const TeamModel = mongoose.model('Team', teamSchema)
+
+export default TeamModel

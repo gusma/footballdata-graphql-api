@@ -1,30 +1,29 @@
-const express = require('express')
-const {ApolloServer} = require('apollo-server-express')
+import express from 'express'
+import { ApolloServer } from 'apollo-server-express'
 
-const { typeDefs } = require('./typeDefs')
-const { resolvers } = require('./resolvers')
-const { connectDB } = require('./db')
+import typeDefs from './typeDefs.js'
+import resolvers from './resolvers.js'
+import connectDB from './db.js'
 
 const app = express()
 connectDB()
 
 app.get('/', (req, res) => res.send('welcome'))
 
+export default app
 
-module.exports = app
+async function start () {
+  const apolloServer = new ApolloServer({ typeDefs, resolvers })
 
-async function start() { 
+  await apolloServer.start()
 
-    const apolloServer = new ApolloServer({ typeDefs, resolvers })
+  apolloServer.applyMiddleware({ app })
 
-    await apolloServer.start()
+  app.use('*', (req, res) => res.status(404).send('Sorry, resource not found'))
 
-    apolloServer.applyMiddleware({ app })
-
-    app.use('*', (req, res) => res.status(404).send('Sorry, resource not found'))
-
-    app.listen(3000, () => { console.log('Server on port', 30000) })
-
+  app.listen(3000, () => {
+    console.log('Server on port', 30000)
+  })
 }
 
 start()
