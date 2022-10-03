@@ -2,6 +2,8 @@ import LeagueModel from './src/models/League.js'
 import TeamModel from './src/models/Team.js'
 import Player from './src/models/Player.js'
 import fetchLeague from './src/controllers/fetchLeague.js'
+import fetchTeams from './src/controllers/fetchTeams.js'
+import { UserInputError } from 'apollo-server-errors'
 
 const resolvers = {
   Query: {
@@ -97,9 +99,14 @@ const resolvers = {
     },
 
     async importLeague (_, args) {
-      const { leagueCode } = args
-      await fetchLeague(leagueCode)
-      return {}
+      const { leagueCode } = args.league
+      const leagueAvailable = await LeagueModel.find({ leagueCode })
+      if (leagueAvailable.length === 0) {
+        await fetchLeague(leagueCode).then(fetchTeams(leagueCode))
+        const newLeague = new LeagueModel({ leagueCode })
+        return newLeague
+      }
+      throw new UserInputError('Sorry, that league already exists in our records.')
     },
     async updateTeam (_, { team, id }) {
       const updatedTeam = await TeamModel.findByIdAndUpdate(

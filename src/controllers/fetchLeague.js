@@ -23,6 +23,8 @@ async function fetchLeague (areaCode) {
       leagueAreaName: response.area.name
     })
     importedLeague.save()
+
+    console.log(importedLeague)
   }
 }
 
