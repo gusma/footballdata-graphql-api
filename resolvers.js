@@ -1,6 +1,7 @@
 import LeagueModel from './src/models/League.js'
 import TeamModel from './src/models/Team.js'
 import PlayerModel from './src/models/Player.js'
+import CoachModel from './src/models/Coach.js'
 import fetchLeague from './src/controllers/fetchLeague.js'
 import fetchTeams from './src/controllers/fetchTeams.js'
 import fetchPlayers from './src/controllers/fetchPlayers.js'
@@ -20,6 +21,10 @@ const resolvers = {
       const players = await PlayerModel.find()
       return players
     },
+    getAllCoaches: async () => {
+      const coaches = await CoachModel.find()
+      return coaches
+    },
     getLeague: async (_, args) => {
       const league = await LeagueModel.findById(args.id)
       return league
@@ -31,6 +36,10 @@ const resolvers = {
     getPlayer: async (_, args) => {
       const player = await PlayerModel.findById(args.id)
       return player
+    },
+    getCoach: async (_, args) => {
+      const coach = await CoachModel.findById(args.id)
+      return coach
     }
   },
 
@@ -85,6 +94,22 @@ const resolvers = {
       await newPlayer.save()
       return newPlayer
     },
+    createCoach: async (_, args) => {
+      const {
+        coachName,
+        coachDateOfBirth,
+        coachNationality,
+        coachTeam
+      } = args.coach
+      const newCoach = new CoachModel({
+        coachName,
+        coachDateOfBirth,
+        coachNationality,
+        coachTeam
+      })
+      await newCoach.save()
+      return newCoach
+    },
     async deleteLeague (_, { id }) {
       await LeagueModel.findByIdAndDelete(id)
       return 'League deleted'
@@ -97,6 +122,10 @@ const resolvers = {
       await PlayerModel.findByIdAndDelete(id)
       return 'Player deleted'
     },
+    async deleteCoach (_, { id }) {
+      await CoachModel.findByIdAndDelete(id)
+      return 'Coach deleted'
+    },
     async updateLeague (_, { league, id }) {
       const updatedLeague = await LeagueModel.findByIdAndUpdate(
         id,
@@ -106,24 +135,6 @@ const resolvers = {
         { new: true }
       )
       return updatedLeague
-    },
-
-    async importLeague (_, args) {
-      const { leagueCode } = args.league
-      const leagueAvailable = await LeagueModel.find({ leagueCode })
-      if (leagueAvailable.length === 0) {
-        fetchLeague(leagueCode)
-        console.log('Fetch League')
-        await fetchTeams(leagueCode)
-        console.log('Fetch Teams')
-        await fetchPlayers(leagueCode)
-        console.log('Fetch Players & Coaches')
-        const newLeague = new LeagueModel({ leagueCode })
-        return newLeague
-      }
-      throw new UserInputError(
-        'Sorry, that league already exists in our records.'
-      )
     },
     async updateTeam (_, { team, id }) {
       const updatedTeam = await TeamModel.findByIdAndUpdate(
@@ -144,6 +155,34 @@ const resolvers = {
         { new: true }
       )
       return updatedPlayer
+    },
+    async updateCoach (_, { coach, id }) {
+      const updatedCoach = await CoachModel.findByIdAndUpdate(
+        id,
+        {
+          $set: coach
+        },
+        { new: true }
+      )
+      return updatedCoach
+    },
+
+    async importLeague (_, args) {
+      const { leagueCode } = args.league
+      const leagueAvailable = await LeagueModel.find({ leagueCode })
+      if (leagueAvailable.length === 0) {
+        fetchLeague(leagueCode)
+        console.log('Fetch League')
+        await fetchTeams(leagueCode)
+        console.log('Fetch Teams')
+        await fetchPlayers(leagueCode)
+        console.log('Fetch Players & Coaches')
+        const newLeague = new LeagueModel({ leagueCode })
+        return newLeague
+      }
+      throw new UserInputError(
+        'Sorry, that league already exists in our records.'
+      )
     }
   }
 }
